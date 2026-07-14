@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="420" viewBox="0 0 880 420" xml:space="preserve" font-family="ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace" font-size="12">
+  <rect x="0" y="0" width="880" height="420" rx="10" fill="#1c1f26"/>
+  <rect x="0" y="0" width="880" height="30" rx="10" fill="#2a2e38"/>
+  <rect x="0" y="20" width="880" height="10" fill="#2a2e38"/>
+  <circle cx="20" cy="15" r="5" fill="#ff5f57"/>
+  <circle cx="38" cy="15" r="5" fill="#febc2e"/>
+  <circle cx="56" cy="15" r="5" fill="#28c840"/>
+  <text x="440" y="19" fill="#8b93a7" text-anchor="middle" font-size="12">idemgate — Idempotency-Key deduplication for any backend</text>
+
+  <text x="20" y="56" fill="#9aa2b5"><tspan fill="#28c840">$</tspan> idemgate serve --upstream http://127.0.0.1:9000</text>
+  <text x="20" y="74" fill="#c8ceda">idemgate 0.1.0 proxying http://127.0.0.1:8080 -&gt; http://127.0.0.1:9000 (store .idemgate, ttl 24h0m0s, methods POST)</text>
+
+  <text x="20" y="102" fill="#9aa2b5"><tspan fill="#28c840">$</tspan> curl -H 'Idempotency-Key: order-42' -d '{"amount":1999,"currency":"usd"}' :8080/charges</text>
+  <text x="20" y="120" fill="#c8ceda">HTTP/1.1 <tspan fill="#28c840">201 Created</tspan></text>
+  <text x="20" y="138" fill="#c8ceda">{"id":"<tspan fill="#61afef">ch_1</tspan>","amount":1999,"currency":"usd","status":"succeeded"}</text>
+
+  <text x="20" y="166" fill="#9aa2b5"><tspan fill="#28c840">$</tspan> curl -H 'Idempotency-Key: order-42' -d '{"amount":1999,"currency":"usd"}' :8080/charges</text>
+  <text x="20" y="184" fill="#5c6370"># network blip, client retried — backend never sees it</text>
+  <text x="20" y="202" fill="#c8ceda">HTTP/1.1 <tspan fill="#28c840">201 Created</tspan></text>
+  <text x="20" y="220" fill="#c8ceda"><tspan fill="#61afef">Idempotency-Replayed: true</tspan></text>
+  <text x="20" y="238" fill="#c8ceda">{"id":"<tspan fill="#61afef">ch_1</tspan>","amount":1999,"currency":"usd","status":"succeeded"}   <tspan fill="#5c6370">← same charge, not a second one</tspan></text>
+
+  <text x="20" y="266" fill="#9aa2b5"><tspan fill="#28c840">$</tspan> curl -H 'Idempotency-Key: order-42' -d '{"amount":9999,"currency":"usd"}' :8080/charges</text>
+  <text x="20" y="284" fill="#c8ceda">HTTP/1.1 <tspan fill="#e06c75">422 Unprocessable Entity</tspan>   <tspan fill="#5c6370"># same key, different payload</tspan></text>
+
+  <text x="20" y="312" fill="#9aa2b5"><tspan fill="#28c840">$</tspan> curl :9000/processed</text>
+  <text x="20" y="330" fill="#c8ceda">{"processed":<tspan fill="#28c840">1</tspan>}   <tspan fill="#5c6370"># the backend executed exactly once</tspan></text>
+
+  <text x="20" y="358" fill="#9aa2b5"><tspan fill="#28c840">$</tspan> idemgate ls --store .idemgate</text>
+  <text x="20" y="376" fill="#8b93a7">KEY       STATUS  STORED                EXPIRES               STATE</text>
+  <text x="20" y="394" fill="#c8ceda">order-42  201     2026-07-13T12:16:20Z  2026-07-14T12:16:20Z  <tspan fill="#28c840">live</tspan></text>
+</svg>

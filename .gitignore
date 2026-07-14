@@ -1,0 +1,17 @@
+# build artifacts
+/idemgate
+/backend
+/dist/
+*.test
+
+# local record stores
+/.idemgate/
+/gate-store/
+
+# coverage
+coverage.out
+coverage.html
+
+# editor droppings
+*.swp
+.DS_Store
